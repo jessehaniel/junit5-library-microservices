@@ -1,0 +1,43 @@
+server:
+  port: 8081
+
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: book-service
+          uri: lb://book-service
+          predicates:
+            - Path=/books/**
+          filters:
+            - RewritePath=/(?<books>.*), /$\{books}
+        
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+          filters:
+            - RewritePath=/(?<users>.*), /$\{users}
+        
+        - id: loan-service
+          uri: lb://loan-service
+          predicates:
+            - Path=/loans/**
+          filters:
+            - RewritePath=/(?<loans>.*), /$\{loans}
+  
+  application:
+    name: gateway
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+eureka:
+  client:
+    region: default
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: http://localhost:8082/eureka/
